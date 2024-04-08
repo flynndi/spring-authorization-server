@@ -6,6 +6,9 @@ logging:
     org.springframework.security: trace
 
 spring:
+  threads:
+    virtual:
+      enabled: true
   security:
     user:
       name: user1
@@ -34,3 +37,16 @@ spring:
                 - "message.read"
                 - "message.write"
             require-authorization-consent: true
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9000
+          jwk-set-uri: http://localhost:9000/oauth2/jwks
+        opaquetoken:
+          introspection-uri: http://localhost:9000/oauth2/introspect
+          client-id: messaging-client
+          client-secret: secret
+  datasource:
+    username: postgres
+    password: 9lxuP0ibQdJWk17
+    url: jdbc:postgresql://localhost:5432/postgres
+    driverClassName: org.postgresql.Driver
