@@ -90,16 +90,7 @@ import org.springframework.security.oauth2.server.authorization.test.SpringTestC
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.oauth2.server.authorization.util.TestX509Certificates;
-import org.springframework.security.oauth2.server.authorization.web.authentication.ClientSecretBasicAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.ClientSecretPostAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.JwtClientAssertionAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2ClientCredentialsAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2DeviceCodeAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2TokenExchangeAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.PublicClientAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.X509ClientCertificateAuthenticationConverter;
+import org.springframework.security.oauth2.server.authorization.web.authentication.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -330,7 +321,8 @@ public class OAuth2ClientCredentialsGrantTests {
 						converter instanceof OAuth2RefreshTokenAuthenticationConverter ||
 						converter instanceof OAuth2ClientCredentialsAuthenticationConverter ||
 						converter instanceof OAuth2DeviceCodeAuthenticationConverter ||
-						converter instanceof OAuth2TokenExchangeAuthenticationConverter);
+						converter instanceof OAuth2TokenExchangeAuthenticationConverter ||
+						converter instanceof OAuth2PasswordAuthenticationConverter);
 
 		verify(authenticationProvider).authenticate(eq(clientCredentialsAuthentication));
 

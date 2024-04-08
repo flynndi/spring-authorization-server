@@ -32,22 +32,11 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AccessTokenAuthenticationToken;
-import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationCodeAuthenticationProvider;
-import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationGrantAuthenticationToken;
-import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientCredentialsAuthenticationProvider;
-import org.springframework.security.oauth2.server.authorization.authentication.OAuth2DeviceCodeAuthenticationProvider;
-import org.springframework.security.oauth2.server.authorization.authentication.OAuth2RefreshTokenAuthenticationProvider;
-import org.springframework.security.oauth2.server.authorization.authentication.OAuth2TokenExchangeAuthenticationProvider;
+import org.springframework.security.oauth2.server.authorization.authentication.*;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.security.oauth2.server.authorization.web.OAuth2TokenEndpointFilter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.DelegatingAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2ClientCredentialsAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2DeviceCodeAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
-import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2TokenExchangeAuthenticationConverter;
+import org.springframework.security.oauth2.server.authorization.web.authentication.*;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -201,6 +190,10 @@ public final class OAuth2TokenEndpointConfigurer extends AbstractOAuth2Configure
 			tokenEndpointFilter.setAuthenticationFailureHandler(this.errorResponseHandler);
 		}
 		httpSecurity.addFilterAfter(postProcess(tokenEndpointFilter), AuthorizationFilter.class);
+
+		List<AuthenticationProvider> passwordAuthenticationProviders = createPasswordAuthenticationProviders(httpSecurity, authenticationManager);
+		passwordAuthenticationProviders.forEach(authenticationProvider ->
+				httpSecurity.authenticationProvider(postProcess(authenticationProvider)));
 	}
 
 	@Override
@@ -216,6 +209,7 @@ public final class OAuth2TokenEndpointConfigurer extends AbstractOAuth2Configure
 		authenticationConverters.add(new OAuth2ClientCredentialsAuthenticationConverter());
 		authenticationConverters.add(new OAuth2DeviceCodeAuthenticationConverter());
 		authenticationConverters.add(new OAuth2TokenExchangeAuthenticationConverter());
+		authenticationConverters.add(new OAuth2PasswordAuthenticationConverter());
 
 		return authenticationConverters;
 	}
@@ -249,6 +243,19 @@ public final class OAuth2TokenEndpointConfigurer extends AbstractOAuth2Configure
 		OAuth2TokenExchangeAuthenticationProvider tokenExchangeAuthenticationProvider =
 				new OAuth2TokenExchangeAuthenticationProvider(authorizationService, tokenGenerator);
 		authenticationProviders.add(tokenExchangeAuthenticationProvider);
+
+		return authenticationProviders;
+	}
+
+	private static List<AuthenticationProvider> createPasswordAuthenticationProviders(HttpSecurity httpSecurity, AuthenticationManager authenticationManager) {
+		List<AuthenticationProvider> authenticationProviders = new ArrayList<>();
+
+		OAuth2AuthorizationService authorizationService = OAuth2ConfigurerUtils.getAuthorizationService(httpSecurity);
+		OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator = OAuth2ConfigurerUtils.getTokenGenerator(httpSecurity);
+
+		OAuth2PasswordAuthenticationProvider passwordAuthenticationProvider =
+				new OAuth2PasswordAuthenticationProvider(authorizationService, authenticationManager, tokenGenerator);
+		authenticationProviders.add(passwordAuthenticationProvider);
 
 		return authenticationProviders;
 	}

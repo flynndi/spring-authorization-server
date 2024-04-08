@@ -201,6 +201,12 @@ public final class OidcUserInfoAuthenticationProvider implements AuthenticationP
 			if (requestedScopes.contains(OidcScopes.PROFILE)) {
 				scopeRequestedClaimNames.addAll(PROFILE_CLAIMS);
 			}
+			if (requestedScopes.contains("groups")) {
+				scopeRequestedClaimNames.add("groups");
+			}
+			if (requestedScopes.contains("perms")) {
+				scopeRequestedClaimNames.add("perms");
+			}
 
 			Map<String, Object> requestedClaims = new HashMap<>(claims);
 			requestedClaims.keySet().removeIf(claimName -> !scopeRequestedClaimNames.contains(claimName));

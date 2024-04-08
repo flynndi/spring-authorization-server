@@ -102,6 +102,7 @@ public final class OAuth2AuthorizationServerMetadataEndpointFilter extends OnceP
 				.grantType(AuthorizationGrantType.REFRESH_TOKEN.getValue())
 				.grantType(AuthorizationGrantType.DEVICE_CODE.getValue())
 				.grantType(AuthorizationGrantType.TOKEN_EXCHANGE.getValue())
+				.grantType(AuthorizationGrantType.PASSWORD.getValue())
 				.tokenRevocationEndpoint(asUrl(issuer, authorizationServerSettings.getTokenRevocationEndpoint()))
 				.tokenRevocationEndpointAuthenticationMethods(clientAuthenticationMethods())
 				.tokenIntrospectionEndpoint(asUrl(issuer, authorizationServerSettings.getTokenIntrospectionEndpoint()))
